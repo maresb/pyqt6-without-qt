@@ -5,7 +5,7 @@ on:
 
 # Define a variable for post release
 env:
-  POST_RELEASE_SUFFIX: .post0
+  POST_RELEASE_SUFFIX: .post1
 
 jobs:
   modify:
