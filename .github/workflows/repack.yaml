@@ -55,7 +55,7 @@ jobs:
       - name: Rename the repacked wheels to pyqt6-without-qt
         run: |
           for wheel in modified_wheels/*.whl; do
-            mv $wheel $(echo $wheel | sed 's/PyQt6/pyqt6-without-qt/')
+            mv $wheel $(echo $wheel | sed 's/PyQt6/pyqt6_without_qt/')
           done
 
       - name: Upload artifacts
