@@ -4,7 +4,7 @@ on:
   workflow_dispatch:
 
 jobs:
-  modify-and-release:
+  modify:
     runs-on: ubuntu-latest
     steps:
       - name: Set up Python
@@ -19,7 +19,12 @@ jobs:
 
       - name: Download latest wheel for the package
         run: |
+          # native Linux platform
           pip download --no-deps --only-binary=:all: pyqt6 --dest wheels
+          # non-Linux platforms
+          for platform in win_amd64 macosx_10_14_universal2; do
+            pip download --no-deps --platform $platform --only-binary=:all: pyqt6 --dest wheels
+          done
 
       - name: Unpack the wheels
         run: |
@@ -28,10 +33,16 @@ jobs:
             unzip $wheel -d unpacked_wheels/$(basename $wheel .whl)
           done
 
-      - name: Remove dependency from wheels
+      - name: Remove Qt6 dependency from wheels
         run: |
           for metafile in unpacked_wheels/*/*.dist-info/METADATA; do
             sed -i '/Requires-Dist: PyQt6-Qt6 .*/d' $metafile
+          done
+
+      - name: Rename the package to pyqt6-without-qt
+        run: |
+          for metafile in unpacked_wheels/*/*.dist-info/METADATA; do
+            sed -i 's/Name: PyQt6/Name: pyqt6-without-qt/' $metafile
           done
 
       - name: Repack the wheels
@@ -41,12 +52,24 @@ jobs:
             python -m wheel pack $dir -d modified_wheels
           done
 
-      - name: Create Release
-        uses: softprops/action-gh-release@v2
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v2
         with:
-          files: modified_wheels/*.whl
-          tag_name: ${{ github.run_id }}
+          name: modified_wheels
+          path: modified_wheels
 
-      - name: Cleanup
-        run: |
-          rm -rf wheels unpacked_wheels modified_wheels
+  publish:
+    needs: modify
+    runs-on: ubuntu-latest
+    environment: release
+    permissions:
+      id-token: write
+    steps:
+      - name: Download modified wheels
+        uses: actions/download-artifact@v2
+        with:
+          name: modified_wheels
+          path: dist
+
+      - name: Publish
+        uses: pypa/gh-action-pypi-publish@v1.8.14
