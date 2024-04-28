@@ -1,5 +1,7 @@
 # pyqt6-without-qt
 
+[![PyPI version](https://img.shields.io/pypi/v/pyqt6-without-qt.svg)](https://pypi.org/project/pyqt6-without-qt/)
+
 I want to be able to run [mypy](https://mypy-lang.org/) on [pre-commit.ci](https://pre-commit.ci/) to type-check PyQt6 code. However, since Qt is so large, I'm getting the error
 
 ```shell
