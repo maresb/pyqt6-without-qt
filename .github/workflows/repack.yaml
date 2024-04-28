@@ -39,7 +39,7 @@ jobs:
             sed -i '/^Requires-Dist: PyQt6-Qt6 .*/d' $metafile
             sed -i 's/^Name: PyQt6/Name: pyqt6-without-qt/' $metafile
             sed -i 's/^Version: \(.*\)/Version: \1\.post0/' $metafile
-            sed -i 's|^Project-Url: .*|Project-Url: https://github.com/maresb/pyqt6-without-qt|' $metafile
+            sed -i 's|^Project-Url: .*|Project-Url: homepage, https://github.com/maresb/pyqt6-without-qt|' $metafile
             sed -i 's|^Author-Email: .*|Author-Email: Ben Mares <services-pyqt6-without-qt@tensorial.com>\n\n\# Patched PyQt6 to remove Qt dependency\n\nSee \<https://github.com/maresb/pyqt6-without-qt\>|' $metafile
           done
 
