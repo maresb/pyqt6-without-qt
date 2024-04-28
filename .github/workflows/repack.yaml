@@ -45,6 +45,9 @@ jobs:
           for dir in unpacked_wheels/*; do
             mv $dir $(echo $dir | sed 's/PyQt6/pyqt6_without_qt/')
           done
+          for dir in unpacked_wheels/*/*; do
+            mv $dir $(echo $dir | sed 's/PyQt6/pyqt6_without_qt/')
+          done
 
       - name: Repack the wheels
         run: |
