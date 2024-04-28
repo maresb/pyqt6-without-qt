@@ -45,17 +45,17 @@ jobs:
             sed -i 's/Name: PyQt6/Name: pyqt6-without-qt/' $metafile
           done
 
+      - name: Rename the package directories to pyqt6_without_qt
+        run: |
+          for dir in unpacked_wheels/*; do
+            mv $dir $(echo $dir | sed 's/PyQt6/pyqt6_without_qt/')
+          done
+
       - name: Repack the wheels
         run: |
           mkdir modified_wheels
           for dir in unpacked_wheels/*; do
             python -m wheel pack $dir -d modified_wheels
-          done
-
-      - name: Rename the repacked wheels to pyqt6-without-qt
-        run: |
-          for wheel in modified_wheels/*.whl; do
-            mv $wheel $(echo $wheel | sed 's/PyQt6/pyqt6_without_qt/')
           done
 
       - name: Upload artifacts
