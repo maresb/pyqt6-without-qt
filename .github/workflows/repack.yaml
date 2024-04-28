@@ -33,15 +33,10 @@ jobs:
             unzip $wheel -d unpacked_wheels/$(basename $wheel .whl)
           done
 
-      - name: Remove Qt6 dependency from wheels
+      - name: Remove Qt6 dependency from wheels and rename the package
         run: |
           for metafile in unpacked_wheels/*/*.dist-info/METADATA; do
             sed -i '/Requires-Dist: PyQt6-Qt6 .*/d' $metafile
-          done
-
-      - name: Rename the package to pyqt6-without-qt
-        run: |
-          for metafile in unpacked_wheels/*/*.dist-info/METADATA; do
             sed -i 's/Name: PyQt6/Name: pyqt6-without-qt/' $metafile
           done
 
