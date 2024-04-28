@@ -3,6 +3,10 @@ name: Modify and Release Python Wheels
 on:
   workflow_dispatch:
 
+# Define a variable for post release
+env:
+  POST_RELEASE_SUFFIX: .post0
+
 jobs:
   modify:
     runs-on: ubuntu-latest
@@ -38,18 +42,21 @@ jobs:
           for metafile in unpacked_wheels/*/*.dist-info/METADATA; do
             sed -i '/^Requires-Dist: PyQt6-Qt6 .*/d' $metafile
             sed -i 's/^Name: PyQt6/Name: pyqt6-without-qt/' $metafile
-            sed -i 's/^Version: \(.*\)/Version: \1\.post0/' $metafile
+            sed -i 's/^Version: \(.*\)/Version: \1'$POST_RELEASE_SUFFIX'/' $metafile
             sed -i 's|^Project-Url: .*|Project-Url: homepage, https://github.com/maresb/pyqt6-without-qt|' $metafile
             sed -i 's|^Author-Email: .*|Author-Email: Ben Mares <services-pyqt6-without-qt@tensorial.com>\n\n\# Patched PyQt6 to remove Qt dependency\n\nSee \<https://github.com/maresb/pyqt6-without-qt\>|' $metafile
           done
 
-      - name: Rename the package directories to pyqt6_without_qt
+      - name: Rename the package directories to pyqt6_without_qt and add POST_RELEASE_SUFFIX
         run: |
           for dir in unpacked_wheels/*; do
-            mv $dir $(echo $dir | sed 's/PyQt6/pyqt6_without_qt/')
+            mv $dir unpacked_wheels/$(basename $dir | sed 's/PyQt6-\([^-]*\)-\(.*\)/pyqt6_without_qt-\1'$POST_RELEASE_SUFFIX'-\2/')
           done
-          for dir in unpacked_wheels/*/*; do
-            mv $dir $(echo $dir | sed 's/PyQt6/pyqt6_without_qt/')
+          for dir in unpacked_wheels/*/PyQt6; do
+            mv $dir $(echo $dir | sed 's|PyQt6|pyqt6_without_qt|')
+          done
+          for dir in unpacked_wheels/*/*.dist-info; do
+            mv $dir $(echo $dir | sed 's|PyQt6-\(.*\)\.dist-info|pyqt6_without_qt-\1'$POST_RELEASE_SUFFIX'.dist-info|')
           done
 
       - name: Repack the wheels
