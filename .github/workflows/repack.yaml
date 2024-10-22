@@ -7,6 +7,10 @@ on:
 env:
   POST_RELEASE_SUFFIX: .post1
 
+defaults:
+  run:
+    shell: /usr/bin/bash -e -x {0}
+
 jobs:
   modify:
     runs-on: ubuntu-latest
